@@ -1,0 +1,326 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">D:\Study\Coursera\Golang\hw3_bench\common.go (89.3%)</option>
+				
+				<option value="file1">D:\Study\Coursera\Golang\hw3_bench\fast.go (100.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package main
+
+import (
+        "encoding/json"
+        "fmt"
+        "io"
+        "io/ioutil"
+        "os"
+        "regexp"
+        "strings"
+        // "log"
+)
+
+const filePath string = "./data/users.txt"
+
+func SlowSearch(out io.Writer) <span class="cov8" title="1">{
+        file, err := os.Open(filePath)
+        if err != nil </span><span class="cov0" title="0">{
+                panic(err)</span>
+        }
+
+        <span class="cov8" title="1">fileContents, err := ioutil.ReadAll(file)
+        if err != nil </span><span class="cov0" title="0">{
+                panic(err)</span>
+        }
+
+        <span class="cov8" title="1">r := regexp.MustCompile("@")
+        seenBrowsers := []string{}
+        uniqueBrowsers := 0
+        foundUsers := ""
+
+        lines := strings.Split(string(fileContents), "\n")
+
+        users := make([]map[string]interface{}, 0)
+        for _, line := range lines </span><span class="cov8" title="1">{
+                user := make(map[string]interface{})
+                // fmt.Printf("%v %v\n", err, line)
+                err := json.Unmarshal([]byte(line), &amp;user)
+                if err != nil </span><span class="cov0" title="0">{
+                        panic(err)</span>
+                }
+                <span class="cov8" title="1">users = append(users, user)</span>
+        }
+
+        <span class="cov8" title="1">for i, user := range users </span><span class="cov8" title="1">{
+
+                isAndroid := false
+                isMSIE := false
+
+                browsers, ok := user["browsers"].([]interface{})
+                if !ok </span><span class="cov0" title="0">{
+                        // log.Println("cant cast browsers")
+                        continue</span>
+                }
+
+                <span class="cov8" title="1">for _, browserRaw := range browsers </span><span class="cov8" title="1">{
+                        browser, ok := browserRaw.(string)
+                        if !ok </span><span class="cov0" title="0">{
+                                // log.Println("cant cast browser to string")
+                                continue</span>
+                        }
+                        <span class="cov8" title="1">if ok, err := regexp.MatchString("Android", browser); ok &amp;&amp; err == nil </span><span class="cov8" title="1">{
+                                isAndroid = true
+                                notSeenBefore := true
+                                for _, item := range seenBrowsers </span><span class="cov8" title="1">{
+                                        if item == browser </span><span class="cov8" title="1">{
+                                                notSeenBefore = false
+                                        }</span>
+                                }
+                                <span class="cov8" title="1">if notSeenBefore </span><span class="cov8" title="1">{
+                                        // log.Printf("SLOW New browser: %s, first seen: %s", browser, user["name"])
+                                        seenBrowsers = append(seenBrowsers, browser)
+                                        uniqueBrowsers++
+                                }</span>
+                        }
+                }
+
+                <span class="cov8" title="1">for _, browserRaw := range browsers </span><span class="cov8" title="1">{
+                        browser, ok := browserRaw.(string)
+                        if !ok </span><span class="cov0" title="0">{
+                                // log.Println("cant cast browser to string")
+                                continue</span>
+                        }
+                        <span class="cov8" title="1">if ok, err := regexp.MatchString("MSIE", browser); ok &amp;&amp; err == nil </span><span class="cov8" title="1">{
+                                isMSIE = true
+                                notSeenBefore := true
+                                for _, item := range seenBrowsers </span><span class="cov8" title="1">{
+                                        if item == browser </span><span class="cov8" title="1">{
+                                                notSeenBefore = false
+                                        }</span>
+                                }
+                                <span class="cov8" title="1">if notSeenBefore </span><span class="cov8" title="1">{
+                                        // log.Printf("SLOW New browser: %s, first seen: %s", browser, user["name"])
+                                        seenBrowsers = append(seenBrowsers, browser)
+                                        uniqueBrowsers++
+                                }</span>
+                        }
+                }
+
+                <span class="cov8" title="1">if !(isAndroid &amp;&amp; isMSIE) </span><span class="cov8" title="1">{
+                        continue</span>
+                }
+
+                // log.Println("Android and MSIE user:", user["name"], user["email"])
+                <span class="cov8" title="1">email := r.ReplaceAllString(user["email"].(string), " [at] ")
+                foundUsers += fmt.Sprintf("[%d] %s &lt;%s&gt;\n", i, user["name"], email)</span>
+        }
+
+        <span class="cov8" title="1">fmt.Fprintln(out, "found users:\n"+foundUsers)
+        fmt.Fprintln(out, "Total unique browsers", len(seenBrowsers))</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package main
+
+import (
+        "encoding/json"
+        "fmt"
+        "io"
+        "io/ioutil"
+        "os"
+        "regexp"
+        </span>"strings"
+)
+
+// вам надо написать более быструю оптимальную этой функции
+func FastSearch(out io.Writer) {
+        file, err := os.Open(filePath)
+        if err != nil {
+                panic(err)
+        }
+
+        fileContents, err := ioutil.ReadAll(file)
+        if err != nil {
+                panic(err)
+        }
+
+        r := regexp.MustCompile("@")
+        seenBrowsers := []string{}
+        uniqueBrowsers := 0
+        foundUsers := ""
+
+        lines := strings.Split(string(fileContents), "\n")
+
+        users := make([]map[string]interface{}, 0)
+        for _, line := range lines {
+                user := make(map[string]interface{})
+                // fmt.Printf("%v %v\n", err, line)
+                err := json.Unmarshal([]byte(line), &amp;user)
+                if err != nil {
+                        panic(err)
+                }
+                users = append(users, user)
+        }
+
+        for i, user := range users {
+
+                isAndroid := false
+                isMSIE := false
+
+                browsers, ok := user["browsers"].([]interface{})
+                if !ok {
+                        // log.Println("cant cast browsers")
+                        continue
+                }
+
+                for _, browserRaw := range browsers {
+                        browser, ok := browserRaw.(string)
+                        if !ok {
+                                // log.Println("cant cast browser to string")
+                                continue
+                        }
+                        if ok, err := regexp.MatchString("Android", browser); ok &amp;&amp; err == nil {
+                                isAndroid = true
+                                notSeenBefore := true
+                                for _, item := range seenBrowsers {
+                                        if item == browser {
+                                                notSeenBefore = false
+                                        }
+                                }
+                                if notSeenBefore {
+                                        // log.Printf("SLOW New browser: %s, first seen: %s", browser, user["name"])
+                                        seenBrowsers = append(seenBrowsers, browser)
+                                        uniqueBrowsers++
+                                }
+                        }
+                }
+
+                for _, browserRaw := range browsers {
+                        browser, ok := browserRaw.(string)
+                        if !ok {
+                                // log.Println("cant cast browser to string")
+                                continue
+                        }
+                        if ok, err := regexp.MatchString("MSIE", browser); ok &amp;&amp; err == nil {
+                                isMSIE = true
+                                notSeenBefore := true
+                                for _, item := range seenBrowsers {
+                                        if item == browser {
+                                                notSeenBefore = false
+                                        }
+                                }
+                                if notSeenBefore {
+                                        // log.Printf("SLOW New browser: %s, first seen: %s", browser, user["name"])
+                                        seenBrowsers = append(seenBrowsers, browser)
+                                        uniqueBrowsers++
+                                }
+                        }
+                }
+
+                if !(isAndroid &amp;&amp; isMSIE) {
+                        continue
+                }
+
+                // log.Println("Android and MSIE user:", user["name"], user["email"])
+                email := r.ReplaceAllString(user["email"].(string), " [at] ")
+                foundUsers += fmt.Sprintf("[%d] %s &lt;%s&gt;\n", i, user["name"], email)
+        }
+
+        fmt.Fprintln(out, "found users:\n"+foundUsers)
+        fmt.Fprintln(out, "Total unique browsers", len(seenBrowsers))
+}</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
